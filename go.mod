@@ -1,4 +1,4 @@
-module github.com/vadlakun/gql-demo-server
+module github.com/another-maverick/gql-demo-server
 
 go 1.12
 

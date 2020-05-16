@@ -2,15 +2,15 @@ package main
 
 import (
 	"database/sql"
-	db2 "github.com/vadlakun/gql-demo-server/graph/api/db"
+	db2 "github.com/another-maverick/gql-demo-server/graph/api/db"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/vadlakun/gql-demo-server/graph"
-	"github.com/vadlakun/gql-demo-server/graph/generated"
+	"github.com/another-maverick/gql-demo-server/graph"
+	"github.com/another-maverick/gql-demo-server/graph/generated"
 )
 
 const defaultPort = "8080"

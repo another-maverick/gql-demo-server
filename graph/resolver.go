@@ -2,7 +2,7 @@ package graph
 
 import (
 	"database/sql"
-	"github.com/vadlakun/gql-demo-server/graph/model"
+	"github.com/another-maverick/gql-demo-server/graph/model"
 )
 
 // This file will not be regenerated automatically.

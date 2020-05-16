@@ -23,4 +23,3 @@ type Video struct {
 	CreatedAt   string   `json:"createdAt"`
 	Related     []*Video `json:"related"`
 }
-
