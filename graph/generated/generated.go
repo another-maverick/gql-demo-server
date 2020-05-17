@@ -267,7 +267,6 @@ type User {
  input NewVideo {
      name: String!
      description: String!
-     userId: ID!
      url: String!
  }
 
@@ -1930,12 +1929,6 @@ func (ec *executionContext) unmarshalInputNewVideo(ctx context.Context, obj inte
 		case "description":
 			var err error
 			it.Description, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "userId":
-			var err error
-			it.UserID, err = ec.unmarshalNID2string(ctx, v)
 			if err != nil {
 				return it, err
 			}

@@ -14,6 +14,7 @@ var videoPublishedChannel map[string]chan model.Video
 
 func init() {
 	videoPublishedChannel = map[string]chan model.Video{}
+
 }
 
 type contextKey string

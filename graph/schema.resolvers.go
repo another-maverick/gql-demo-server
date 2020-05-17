@@ -5,6 +5,8 @@ package graph
 
 import (
 	"context"
+	"database/sql"
+	"fmt"
 	"time"
 
 	"github.com/another-maverick/gql-demo-server/graph/api/db"
@@ -13,6 +15,18 @@ import (
 	"github.com/another-maverick/gql-demo-server/graph/model"
 )
 
+
+
+func NewRootResolvers(db *sql.DB) generated.Config {
+	c := generated.Config{
+		Resolvers: &Resolver{
+			db: db,
+		},
+	}
+	return c
+}
+
+
 func (r *mutationResolver) CreateVideo(ctx context.Context, input model.NewVideo) (*model.Video, error) {
 	newVideo := model.Video{
 		URL:         input.URL,
@@ -20,7 +34,15 @@ func (r *mutationResolver) CreateVideo(ctx context.Context, input model.NewVideo
 		Name:        input.Name,
 		CreatedAt:   time.Now().String(),
 	}
-	rows, err := db.LogAndQuery(r.db, "INSERT INTO videos (name, description, url, created_at) VALUES($1, $2, $3, $4) RETURNING id",
+
+	dbCon, err := db.Connect()
+	if err != nil {
+		panic(err)
+	}
+
+
+	fmt.Printf("%T", r.db)
+	rows, err := db.LogAndQuery(dbCon, "INSERT INTO videos (name, description, url, created_at) VALUES($1, $2, $3, $4) RETURNING id",
 		input.Name, input.Description, input.URL, newVideo.CreatedAt)
 	if err != nil || !rows.Next() {
 		return &model.Video{}, err
@@ -35,30 +57,36 @@ func (r *mutationResolver) CreateVideo(ctx context.Context, input model.NewVideo
 		return &model.Video{}, gqlerrors.InternalServerError
 	}
 
-	//for _, observer := range videoPublishedChannel {
-	//	observer <- newVideo
-	//}
 	return &newVideo, nil
 }
 
 func (r *queryResolver) Videos(ctx context.Context, limit *int, offset *int) ([]*model.Video, error) {
-	var video *model.Video
 	var videos []*model.Video
 
-	rows, err := db.LogAndQuery(r.db,
+	dbCon, err := db.Connect()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%T", dbCon)
+	fmt.Println("About to execute search query..")
+	rows, err := db.LogAndQuery(dbCon,
 		"SELECT id, name, description, url, created_at FROM videos "+
 			"ORDER BY created_at desc limit $1 offset $2", limit, offset)
+	fmt.Println("executed search query..")
 	defer rows.Close()
 	if err != nil {
 		gqlerrors.DebugPrintf(err)
 		return nil, gqlerrors.InternalServerError
 	}
 	for rows.Next() {
-		if err := rows.Scan(&video.ID, &video.Name, &video.URL, &video.CreatedAt); err != nil {
+		var video model.Video
+		if err := rows.Scan(&video.ID, &video.Name, &video.Description, &video.URL, &video.CreatedAt); err != nil {
 			gqlerrors.DebugPrintf(err)
 			return nil, gqlerrors.InternalServerError
 		}
-		videos = append(videos, video)
+		fmt.Println(video.ID, video.Name, video.Description, video.URL, video.CreatedAt)
+		videos = append(videos, &video)
 	}
 	return videos, nil
 }
@@ -69,5 +97,6 @@ func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResol
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
-type mutationResolver struct{ *Resolver }
+type mutationResolver struct{
+	*Resolver }
 type queryResolver struct{ *Resolver }

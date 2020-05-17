@@ -21,12 +21,12 @@ func main() {
 		port = "8081"
 	}
 
-	db, err := db2.Connect()
+	dbConn, err := db2.Connect()
 	if err != nil {
 		panic(err)
 	}
 
-	initDB(db)
+	initDB(dbConn)
 
 
 
@@ -45,7 +45,7 @@ func initDB(db *sql.DB) {
 	db2.MustExec(db,"DROP TABLE IF EXISTS users")
 	db2.MustExec(db, "CREATE TABLE public.users (id SERIAL PRIMARY KEY, name varchar(255), email varchar(255))")
 	db2.MustExec(db, "CREATE TABLE public.videos (id SERIAL PRIMARY KEY, name varchar(255), " +
-		"description varchar(255), url text,created_at TIMESTAMP)")
+		"description varchar(255), url text, created_at text)")
 	db2.MustExec(db, "INSERT INTO users(name, email) VALUES('maverick', 'maverick@test.me')")
 	db2.MustExec(db, "INSERT INTO users(name, email) VALUES('vadlakun', 'vadlakun@test.me')")
 }

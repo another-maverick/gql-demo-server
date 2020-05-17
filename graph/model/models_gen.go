@@ -5,7 +5,6 @@ package model
 type NewVideo struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	UserID      string `json:"userId"`
 	URL         string `json:"url"`
 }
 
